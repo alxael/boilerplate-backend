@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const chalk = require('chalk');
 const path = require('path');
 const mongoose = require('mongoose');
+const swaggerUI = require('swagger-ui-express');
 
 const port = process.env.PORT || 8080;
 
@@ -24,8 +25,13 @@ app.use(express.json());
 
 app.use(morgan('tiny'));
 
+const swaggerDocument = require(path.join(__dirname, '/swagger.json'));
+
 app.use('/api', productRouter);
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.listen(port, () => {
   debug(`Listening on port ${chalk.green(port)}.`);
 });
+
+require(path.join(__dirname, '/controllers/productController'))(app);

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "debug": "DEBUG=app:* nodemon",
+    "swagger-autogen": "node swagger.js",
     "lint": "eslint --init"
   },
   "repository": {
@@ -30,7 +31,9 @@
     "express": "^4.17.1",
     "mongoose": "^6.0.7",
     "morgan": "^1.10.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "swagger-autogen": "^2.11.2",
+    "swagger-ui-express": "^4.1.6"
   },
   "nodemonConfig": {
     "restartable": "rs",
