@@ -2,8 +2,7 @@ const debug = require('debug')('app:productController');
 
 function productController(productModel) {
   function post(req, res) {
-    debug('post works!');
-    const product = new Product(req.body);
+    const product = new productModel(req.body);
 
     /* Insert POST requirements here */
 
@@ -13,7 +12,6 @@ function productController(productModel) {
   }
 
   function get(req, res) {
-    debug('get works!');
     const query = {};
 
     Object.assign(query, req.query);

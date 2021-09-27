@@ -25,7 +25,7 @@ app.use(express.json());
 
 app.use(morgan('tiny'));
 
-const swaggerDocument = require(path.join(__dirname, '/swagger.json'));
+const swaggerDocument = require(path.join(__dirname, '/swagger/swagger.json'));
 
 app.use('/api', productRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));

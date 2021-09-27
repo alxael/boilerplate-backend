@@ -33,7 +33,7 @@ function routes(productModel) {
     .put((req, res) => {
       const { product } = req;
 
-      [ ...product ] = req.body;
+      Object.assign(product, req.body);
 
       req.product.save((err) => {
         if(err) {
