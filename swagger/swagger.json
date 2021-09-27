@@ -16,7 +16,7 @@
   "paths": {
     "/products": {
       "get": {
-        "tags": [],
+        "tags": [ "Product" ],
         "description": "Show all products.",
         "parameters": [],
         "responses": {
@@ -38,12 +38,12 @@
         }
       },
       "post": {
-        "tags": [],
-        "description": "",
+        "tags": [ "Product" ],
+        "description": "Product to be added.",
         "parameters": [ {
           "name": "Product",
           "in": "body",
-          "description": "Product to be added.",
+          "description": "",
           "required": "true",
           "schema": {
             "$ref": "#/definitions/Product"
@@ -61,7 +61,7 @@
     },
     "/products/{productId}": {
       "get": {
-        "tags": [],
+        "tags": [ "Product" ],
         "description": "Returns the product information based on ID.",
         "parameters": [
           {
@@ -81,7 +81,7 @@
         }
       },
       "put": {
-        "tags": [],
+        "tags": [ "Product" ],
         "description": "Modify product.",
         "parameters": [
           {
@@ -110,7 +110,7 @@
         }
       },
       "delete": {
-        "tags": [],
+        "tags": [ "Product" ],
         "description": "Product to be deleted.",
         "parameters": [
           {
@@ -130,7 +130,7 @@
         }
       },
       "patch": {
-        "tags": [],
+        "tags": [ "Product" ],
         "description": "Product to be modified partially.",
         "parameters": [
           {
