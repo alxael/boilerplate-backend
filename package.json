@@ -1,0 +1,44 @@
+{
+  "name": "boilerplate-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "debug": "DEBUG=app:* nodemon",
+    "lint": "eslint --init"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alxael/boilerplate-backend.git"
+  },
+  "author": "alxael",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alxael/boilerplate-backend/issues"
+  },
+  "homepage": "https://github.com/alxael/boilerplate-backend#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.24.2",
+    "nodemon": "^2.0.13"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "debug": "^4.3.2",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0"
+  },
+  "nodemonConfig": {
+    "restartable": "rs",
+    "ignore": [
+      "node_modules/**/node_modules"
+    ],
+    "delay": "1000",
+    "env": {
+      "PORT": 4000,
+      "NODE_ENV": "development"
+    }
+  }
+}
