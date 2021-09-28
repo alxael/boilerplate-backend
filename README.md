@@ -37,6 +37,7 @@ You will also need to add with ```touch .env``` the ```.env``` file, which shoul
 NODE_ENV=development
 PORT=4000
 DB_LINK=mongodb://localhost:27017/myapp
+TOKEN_KEY=*random text*
 ```
 
 To run the project, simply do an ```npm run debug``` command. To interact with the API, access ```localhost:4000/api-docs```.

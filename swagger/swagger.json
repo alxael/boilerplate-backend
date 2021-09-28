@@ -11,17 +11,23 @@
   "schemes": [
     "http"
   ],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "paths": {
-    "/products": {
+    "/product": {
       "get": {
-        "tags": [ "Product" ],
+        "tags": [
+          "Product"
+        ],
         "description": "Show all products.",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "product response",
+            "description": "OK",
             "schema": {
               "type": "array",
               "items": {
@@ -30,7 +36,7 @@
             }
           },
           "default": {
-            "description": "unexpected error",
+            "description": "Unexpected error.",
             "schema": {
               "$ref": "#/definitions/ErrorModel"
             }
@@ -38,20 +44,27 @@
         }
       },
       "post": {
-        "tags": [ "Product" ],
+        "tags": [
+          "Product"
+        ],
         "description": "Product to be added.",
-        "parameters": [ {
-          "name": "Product",
-          "in": "body",
-          "description": "",
-          "required": "true",
-          "schema": {
-            "$ref": "#/definitions/Product"
+        "parameters": [
+          {
+            "name": "Product",
+            "in": "body",
+            "description": "",
+            "required": "true",
+            "schema": {
+              "$ref": "#/definitions/Product"
+            }
           }
-        } ],
-        "produces": {
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid entry."
+          },
           "default": {
-            "description": "unexpected error",
+            "description": "Unexpected error.",
             "schema": {
               "$ref": "#/definitions/ErrorModel"
             }
@@ -59,9 +72,11 @@
         }
       }
     },
-    "/products/{productId}": {
+    "/product/{productId}": {
       "get": {
-        "tags": [ "Product" ],
+        "tags": [
+          "Product by ID"
+        ],
         "description": "Returns the product information based on ID.",
         "parameters": [
           {
@@ -73,7 +88,7 @@
         ],
         "responses": {
           "default": {
-            "description": "unexpected error",
+            "description": "Unexpected error.",
             "schema": {
               "$ref": "#/definitions/ErrorModel"
             }
@@ -81,7 +96,9 @@
         }
       },
       "put": {
-        "tags": [ "Product" ],
+        "tags": [
+          "Product by ID"
+        ],
         "description": "Modify product.",
         "parameters": [
           {
@@ -93,7 +110,7 @@
           {
             "name": "Product",
             "in": "body",
-            "description": "Product to be added.",
+            "description": "Product to be modified.",
             "required": "true",
             "schema": {
               "$ref": "#/definitions/Product"
@@ -102,7 +119,7 @@
         ],
         "responses": {
           "default": {
-            "description": "unexpected error",
+            "description": "Unexpected error.",
             "schema": {
               "$ref": "#/definitions/ErrorModel"
             }
@@ -110,7 +127,9 @@
         }
       },
       "delete": {
-        "tags": [ "Product" ],
+        "tags": [
+          "Product by ID"
+        ],
         "description": "Product to be deleted.",
         "parameters": [
           {
@@ -122,7 +141,7 @@
         ],
         "responses": {
           "default": {
-            "description": "unexpected error",
+            "description": "Unexpected error.",
             "schema": {
               "$ref": "#/definitions/ErrorModel"
             }
@@ -130,7 +149,9 @@
         }
       },
       "patch": {
-        "tags": [ "Product" ],
+        "tags": [
+          "Product by ID"
+        ],
         "description": "Product to be modified partially.",
         "parameters": [
           {
@@ -142,7 +163,7 @@
           {
             "name": "Product",
             "in": "body",
-            "description": "Product to be added.",
+            "description": "Product to be patched.",
             "required": "true",
             "schema": {
               "$ref": "#/definitions/Product"
@@ -151,7 +172,204 @@
         ],
         "responses": {
           "default": {
-            "description": "unexpected error",
+            "description": "Unexpected error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Show all users.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "Log in.",
+        "parameters": [
+          {
+            "name": "User",
+            "in": "body",
+            "description": "",
+            "required": "true",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid entry or bad credentials."
+          },
+          "default": {
+            "description": "Unexpected error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      }
+    },
+    "/user/register": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "Register new user.",
+        "parameters": [
+          {
+            "name": "User",
+            "in": "body",
+            "description": "",
+            "required": "true",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid entry."
+          },
+          "409": {
+            "description": "Conflicting entry."
+          },
+          "default": {
+            "description": "Unexpected error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      }
+    },
+    "/user/{userId}": {
+      "get": {
+        "tags": [
+          "User by ID"
+        ],
+        "description": "Returns the user information based on ID.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Unexpected error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "User by ID"
+        ],
+        "description": "Modify user data.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "User",
+            "in": "body",
+            "description": "User to be added.",
+            "required": "true",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Unexpected error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "User by ID"
+        ],
+        "description": "User to be deleted.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Unexpected error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "User by ID"
+        ],
+        "description": "User to be modified partially.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "User",
+            "in": "body",
+            "description": "User to be patched.",
+            "required": "true",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Unexpected error.",
             "schema": {
               "$ref": "#/definitions/ErrorModel"
             }
@@ -161,6 +379,20 @@
     }
   },
   "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
     "Product": {
       "type": "object",
       "properties": {
@@ -169,6 +401,9 @@
         },
         "description": {
           "type": "string"
+        },
+        "price": {
+          "type": "integer"
         }
       }
     },
