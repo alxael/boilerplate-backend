@@ -4,14 +4,16 @@ const morgan = require('morgan');
 const chalk = require('chalk');
 const path = require('path');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 const swaggerUI = require('swagger-ui-express');
 
-const port = process.env.PORT || 8080;
+dotenv.config();
+const port = process.env.PORT;
 
-if(process.env.ENV == 'development') {
-  const db = mongoose.connect('mongodb://localhost:27017/myapp');
+if(process.env.NODE_ENV == 'development') {
+  const db = mongoose.connect(process.env.DB_LINK);
   debug(`This ${chalk.green('is')} a test.`);
-} else if(process.env.ENV == 'production') {
+} else if(process.env.NODE_ENV == 'production') {
   const db = mongoose.connect('');
   debug(`This ${chalk.red('is not')} a test.`);
 }

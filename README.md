@@ -29,7 +29,17 @@ After this, install the packages with ```npm install```. Make sure you have Mong
 
 ## Usage
 
-Before running the project, make sure the MongoDB server is running. If you are running it locally, open a new terminal and type in ```mongod```. To run the project, simply do an ```npm run debug``` command. To interact with the API, access ```localhost:4000/api-docs```.
+First, start up the MongoDB server. If you are running it locally, open a new terminal and type in ```mongod```.
+
+You will also need to add with ```touch .env``` the ```.env``` file, which should have the following structure:
+
+```dosini
+NODE_ENV=development
+PORT=4000
+DB_LINK=mongodb://localhost:27017/myapp
+```
+
+To run the project, simply do an ```npm run debug``` command. To interact with the API, access ```localhost:4000/api-docs```.
 
 ## License
 
