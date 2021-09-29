@@ -17,11 +17,23 @@
   "produces": [
     "application/json"
   ],
+  "securityDefinitions": {
+    "JWT": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "paths": {
     "/product": {
       "get": {
         "tags": [
           "Product"
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
         ],
         "description": "Show all products.",
         "parameters": [],
@@ -35,11 +47,11 @@
               }
             }
           },
-          "default": {
-            "description": "Unexpected error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorModel"
-            }
+          "401": {
+            "$ref": "#/responses/Authorization401"
+          },
+          "403": {
+            "$ref": "#/responses/Authorization403"
           }
         }
       },
@@ -48,6 +60,11 @@
           "Product"
         ],
         "description": "Product to be added.",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "Product",
@@ -60,14 +77,17 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Invalid entry."
+          "201": {
+            "description": "Product created successfully."
           },
-          "default": {
-            "description": "Unexpected error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorModel"
-            }
+          "400": {
+            "description": "The input data is not valid."
+          },
+          "401": {
+            "$ref": "#/responses/Authorization401"
+          },
+          "403": {
+            "$ref": "#/responses/Authorization403"
           }
         }
       }
@@ -78,6 +98,11 @@
           "Product by ID"
         ],
         "description": "Returns the product information based on ID.",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "productId",
@@ -87,11 +112,17 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "Unexpected error.",
+          "200": {
+            "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ErrorModel"
+              "$ref": "#/definitions/Product"
             }
+          },
+          "401": {
+            "$ref": "#/responses/Authorization401"
+          },
+          "403": {
+            "$ref": "#/responses/Authorization403"
           }
         }
       },
@@ -100,6 +131,11 @@
           "Product by ID"
         ],
         "description": "Modify product.",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "productId",
@@ -118,11 +154,14 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "Unexpected error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorModel"
-            }
+          "200": {
+            "description": "Product modified successfully."
+          },
+          "401": {
+            "$ref": "#/responses/Authorization401"
+          },
+          "403": {
+            "$ref": "#/responses/Authorization403"
           }
         }
       },
@@ -131,6 +170,11 @@
           "Product by ID"
         ],
         "description": "Product to be deleted.",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "productId",
@@ -140,42 +184,14 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "Unexpected error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorModel"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Product by ID"
-        ],
-        "description": "Product to be modified partially.",
-        "parameters": [
-          {
-            "name": "productId",
-            "in": "path",
-            "required": true,
-            "type": "string"
+          "200": {
+            "description": "Product modified successfully."
           },
-          {
-            "name": "Product",
-            "in": "body",
-            "description": "Product to be patched.",
-            "required": "true",
-            "schema": {
-              "$ref": "#/definitions/Product"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Unexpected error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorModel"
-            }
+          "401": {
+            "$ref": "#/responses/Authorization401"
+          },
+          "403": {
+            "$ref": "#/responses/Authorization403"
           }
         }
       }
@@ -187,6 +203,11 @@
         ],
         "description": "Show all users.",
         "parameters": [],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -197,11 +218,11 @@
               }
             }
           },
-          "default": {
-            "description": "Unexpected error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorModel"
-            }
+          "401": {
+            "$ref": "#/responses/Authorization401"
+          },
+          "403": {
+            "$ref": "#/responses/Authorization403"
           }
         }
       }
@@ -224,14 +245,11 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Invalid entry or bad credentials."
+          "200": {
+            "description": "Log in successful."
           },
-          "default": {
-            "description": "Unexpected error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorModel"
-            }
+          "400": {
+            "description": "Invalid input data or bad credentials."
           }
         }
       }
@@ -254,17 +272,14 @@
           }
         ],
         "responses": {
+          "201": {
+            "description": "User created successfully."
+          },
           "400": {
             "description": "Invalid entry."
           },
           "409": {
             "description": "Conflicting entry."
-          },
-          "default": {
-            "description": "Unexpected error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorModel"
-            }
           }
         }
       }
@@ -275,6 +290,11 @@
           "User by ID"
         ],
         "description": "Returns the user information based on ID.",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "userId",
@@ -284,11 +304,17 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "Unexpected error.",
+          "200": {
+            "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ErrorModel"
+              "$ref": "#/definitions/User"
             }
+          },
+          "401": {
+            "$ref": "#/responses/Authorization401"
+          },
+          "403": {
+            "$ref": "#/responses/Authorization403"
           }
         }
       },
@@ -297,6 +323,11 @@
           "User by ID"
         ],
         "description": "Modify user data.",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "userId",
@@ -315,11 +346,14 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "Unexpected error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorModel"
-            }
+          "200": {
+            "description": "User modified successfully."
+          },
+          "401": {
+            "$ref": "#/responses/Authorization401"
+          },
+          "403": {
+            "$ref": "#/responses/Authorization403"
           }
         }
       },
@@ -328,6 +362,11 @@
           "User by ID"
         ],
         "description": "User to be deleted.",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "name": "userId",
@@ -337,45 +376,25 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "Unexpected error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorModel"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "User by ID"
-        ],
-        "description": "User to be modified partially.",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "type": "string"
+          "200": {
+            "description": "User deleted successfully."
           },
-          {
-            "name": "User",
-            "in": "body",
-            "description": "User to be patched.",
-            "required": "true",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Unexpected error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorModel"
-            }
+          "401": {
+            "$ref": "#/responses/Authorization401"
+          },
+          "403": {
+            "$ref": "#/responses/Authorization403"
           }
         }
       }
+    }
+  },
+  "responses": {
+    "Authorization401": {
+      "description": "Authorization: The token is invalid."
+    },
+    "Authorization403": {
+      "description": "Authorization: No token provided."
     }
   },
   "definitions": {
@@ -404,22 +423,6 @@
         },
         "price": {
           "type": "integer"
-        }
-      }
-    },
-    "ErrorModel": {
-      "type": "object",
-      "required": [
-        "code",
-        "message"
-      ],
-      "properties": {
-        "code": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "type": "string"
         }
       }
     }

@@ -1,12 +1,13 @@
 const express = require('express');
 const { models } = require('mongoose');
 const debug = require('debug')('app:productRouter');
+const authenticate = require('../middleware/authenticate');
 
 function routes(productModel) {
   const productRouter = express.Router();
 
   productRouter.route('/product')
-    .post((req, res) => {
+    .post(authenticate, (req, res) => {
       const product = new productModel(req.body);
       
       /* POST requirements here */
@@ -20,7 +21,7 @@ function routes(productModel) {
       res.status(201);
       return res.json(product);
     })
-    .get((req, res) => {
+    .get(authenticate, (req, res) => {
       const query = {};
 
       Object.assign(query, req.query);
@@ -39,7 +40,7 @@ function routes(productModel) {
       });
     });
 
-  productRouter.use('/product/:productId', (req, res, next) => {
+  productRouter.use('/product/:productId', authenticate, (req, res, next) => {
     productModel.findById(req.params.productId, (err, product) => {
       if(err) {
         return res.sendStatus(404);
@@ -66,34 +67,16 @@ function routes(productModel) {
         if(err) {
           return res.send(err);
         }
+        res.status(200);
         return res.json(product);
       })
-    })
-    .patch((req, res) => {
-      const { product } = req;
-
-      if(req.body._id) {
-        delete req.body._id;
-      }
-      Object.entries(req.body).forEach((item) => {
-        const key = item[0];
-        const value = item[1];
-        product[key] = value;
-      });
-
-      req.product.save((err) => {
-        if(err) {
-          return res.send(err);
-        }
-        return res.json(product);
-      });
     })
     .delete((req, res) => {
       req.product.remove((err) => {
         if(err) {
           return res.send(err);
         }
-        return res.sendStatus(204);
+        return res.sendStatus(200);
       })
     });
 

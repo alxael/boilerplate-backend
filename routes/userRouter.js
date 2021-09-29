@@ -3,7 +3,7 @@ const { models } = require('mongoose');
 const debug = require('debug')('app:userRouter');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const productModel = require('../models/productModel');
+const authenticate = require('../middleware/authenticate');
 
 function routes(userModel) {
   const userRouter = express.Router();
@@ -64,6 +64,7 @@ function routes(userModel) {
             { expiresIn: "2h" }
           );
           user.token = token;
+          user.password 
 
           res.status(200);
           return res.json(user);
@@ -77,7 +78,7 @@ function routes(userModel) {
     });
 
   userRouter.route('/user')
-    .get((req, res) => {
+    .get(authenticate, (req, res) => {
       const query = {};
 
       Object.assign(query, req.query);
@@ -92,11 +93,12 @@ function routes(userModel) {
           /* Extra processing */
           return newUser;
         });
+        res.status(200);
         return res.json(returnUser);
       });
     });
 
-  userRouter.use('/user/:userId', (req, res, next) => {
+  userRouter.use('/user/:userId', authenticate, (req, res, next) => {
     userModel.findById(req.params.userId, (err, user) => {
       if (err) {
         return res.sendStatus(404);
@@ -112,6 +114,7 @@ function routes(userModel) {
   userRouter.route('/user/:userId')
     .get((req, res) => {
       const returnUser = req.user.toJSON();
+      res.status(200);
       res.json(returnUser);
     })
     .put((req, res) => {
@@ -123,34 +126,16 @@ function routes(userModel) {
         if (err) {
           return res.send(err);
         }
+        res.status(200);
         return res.json(user);
       })
-    })
-    .patch((req, res) => {
-      const { user } = req;
-
-      if (req.body._id) {
-        delete req.body._id;
-      }
-      Object.entries(req.body).forEach((item) => {
-        const key = item[0];
-        const value = item[1];
-        product[key] = value;
-      });
-
-      req.user.save((err) => {
-        if (err) {
-          return res.send(err);
-        }
-        return res.json(user);
-      });
     })
     .delete((req, res) => {
       req.user.remove((err) => {
         if (err) {
           return res.send(err);
         }
-        return res.sendStatus(204);
+        return res.sendStatus(200);
       })
     });
 

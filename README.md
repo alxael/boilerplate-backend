@@ -1,10 +1,10 @@
 # Boilerplate Back-End
 
-This project is the back-end component of a product management web application.
+This project is a RESTful API designed for product management.
 
 ## Features
 
-At the moment, the API has very few endpoints.
+At the moment, the API has endpoints for products and users. The API uses JWT to sign claims securely.
 
 ## Technologies used
 
@@ -27,10 +27,6 @@ https://github.com/alxael/boilerplate-backend.git
 
 After this, install the packages with ```npm install```. Make sure you have MongoDB installed and set up properly to run locally. The application connects by default to ```mongodb://localhost:27017``` in the ```myapp``` database.
 
-## Usage
-
-First, start up the MongoDB server. If you are running it locally, open a new terminal and type in ```mongod```.
-
 You will also need to add with ```touch .env``` the ```.env``` file, which should have the following structure:
 
 ```dosini
@@ -40,7 +36,13 @@ DB_LINK=mongodb://localhost:27017/myapp
 TOKEN_KEY=*random text*
 ```
 
-To run the project, simply do an ```npm run debug``` command. To interact with the API, access ```localhost:4000/api-docs```.
+## Usage
+
+First, start up the MongoDB server. If you are running it locally, open a new terminal and type in ```mongod```.
+
+To run the project, simply do an ```npm start``` command. To interact with the API, access ```localhost:4000/api-docs```.
+
+In order to use the API fully, first create a new user using the ```/user/register``` endpoint. Then authenticate with the user token by inserting it into the window that pops up when you press the Authenticate button on the right hand side. Then, feel free to create, read, update and delete anything you want.
 
 ## License
 

@@ -6,6 +6,8 @@ const path = require('path');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const swaggerUI = require('swagger-ui-express');
+const helmet = require('helmet');
+const cors = require('cors');
 
 dotenv.config();
 const port = process.env.PORT;
@@ -24,6 +26,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(morgan('tiny'));
+app.use(helmet());
+app.use(cors());
 
 const productModel = require(path.join(__dirname, '/models/productModel'));
 const productRouter = require(path.join(__dirname, '/routes/productRouter'))(productModel);
