@@ -1,0 +1,340 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Product API
+  description: ""
+tags: []
+paths:
+  /product:
+    get:
+      tags:
+        - Product
+      security:
+        - JWT: []
+      description: Show all products.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+    post:
+      tags:
+        - Product
+      description: Product to be added.
+      security:
+        - JWT: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+        required: "true"
+      responses:
+        "201":
+          description: Product created successfully.
+        "400":
+          description: The input data is not valid.
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+  "/product/{productId}":
+    get:
+      tags:
+        - Product by ID
+      description: Returns the product information based on ID.
+      security:
+        - JWT: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+    put:
+      tags:
+        - Product by ID
+      description: Modify product.
+      security:
+        - JWT: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+        description: Product to be modified.
+        required: "true"
+      responses:
+        "200":
+          description: Product modified successfully.
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+    delete:
+      tags:
+        - Product by ID
+      description: Product to be deleted.
+      security:
+        - JWT: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product deleted successfully.
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+  "/user":
+    get:
+      tags:
+        - User
+      description: Show all users.
+      security:
+        - JWT: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+  "/user/login":
+    post:
+      tags:
+        - User
+      description: Log in.
+      requestBody:
+        $ref: "#/components/requestBodies/User"
+      responses:
+        "200":
+          description: Log in successful.
+        "400":
+          description: Invalid input data or bad credentials.
+  "/user/register":
+    post:
+      tags:
+        - User
+      description: Register new user.
+      requestBody:
+        $ref: "#/components/requestBodies/User"
+      responses:
+        "201":
+          description: User created successfully.
+        "400":
+          description: Invalid entry.
+        "409":
+          description: Conflicting entry.
+  "/user/{userId}":
+    get:
+      tags:
+        - User by ID
+      description: Returns the user information based on ID.
+      security:
+        - JWT: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+    put:
+      tags:
+        - User by ID
+      description: Modify user data.
+      security:
+        - JWT: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        description: User to be added.
+        required: "true"
+      responses:
+        "200":
+          description: User modified successfully.
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+    delete:
+      tags:
+        - User by ID
+      description: User to be deleted.
+      security:
+        - JWT: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User deleted successfully.
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+  "/userRole":
+    get:
+      tags:
+        - User Role
+      security:
+        - JWT: []
+      description: Show all user roles.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserRole"
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+    post:
+      tags:
+        - User Role
+      description: User role to be added.
+      security:
+        - JWT: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRole"
+        required: "true"
+      responses:
+        "201":
+          description: User role created successfully.
+        "400":
+          description: The input data is not valid.
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+        "409":
+          description: Conflicting entry.
+  "/userRole/{userRoleId}":
+    delete:
+      tags:
+        - User Role
+      description: User role to be deleted.
+      security:
+        - JWT: []
+      parameters:
+        - name: userRoleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User role deleted successfully.
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+
+servers:
+  - url: http://localhost:4000/api
+components:
+  responses:
+    Authorization401:
+      description: "Authorization: The token is invalid."
+    Authorization403:
+      description: "Authorization: No token provided."
+  requestBodies:
+    User:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/User"
+      required: "true"
+  securitySchemes:
+    JWT:
+      type: apiKey
+      name: Authorization
+      in: header
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    UserRole:
+      type: object
+      properties:
+        userRole:
+          type: string
+    Product:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer

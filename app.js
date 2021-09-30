@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 const swaggerUI = require('swagger-ui-express');
 const helmet = require('helmet');
 const cors = require('cors');
+const yaml = require('yamljs');
 
 dotenv.config();
 const port = process.env.PORT;
@@ -30,15 +31,18 @@ app.use(helmet());
 app.use(cors());
 
 const productModel = require(path.join(__dirname, '/models/productModel'));
-const productRouter = require(path.join(__dirname, '/routes/productRouter'))(productModel);
-
 const userModel = require(path.join(__dirname, '/models/userModel'));
-const userRouter = require(path.join(__dirname, '/routes/userRouter'))(userModel);
+const userRoleModel = require(path.join(__dirname, '/models/userRoleModel'));
 
-const swaggerDocument = require(path.join(__dirname, '/swagger/swagger.json'));
+const productRouter = require(path.join(__dirname, '/routes/productRouter'))(productModel);
+const userRouter = require(path.join(__dirname, '/routes/userRouter'))(userModel, userRoleModel);
+const userRoleRouter = require(path.join(__dirname, '/routes/userRoleRouter'))(userRoleModel);
 
 app.use('/api', productRouter);
 app.use('/api', userRouter);
+app.use('/api', userRoleRouter);
+
+const swaggerDocument = yaml.load(path.join(__dirname, '/swagger/swagger.yaml'));
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.listen(port, () => {

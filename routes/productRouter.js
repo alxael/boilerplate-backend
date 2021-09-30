@@ -1,13 +1,13 @@
 const express = require('express');
 const { models } = require('mongoose');
 const debug = require('debug')('app:productRouter');
-const authenticate = require('../middleware/authenticate');
+const { verifyToken, authorizeClient, authorizeModerator } = require('../middleware/authenticate');
 
 function routes(productModel) {
   const productRouter = express.Router();
 
   productRouter.route('/product')
-    .post(authenticate, (req, res) => {
+    .post(verifyToken, authorizeClient, (req, res) => {
       const product = new productModel(req.body);
       
       /* POST requirements here */
@@ -21,7 +21,7 @@ function routes(productModel) {
       res.status(201);
       return res.json(product);
     })
-    .get(authenticate, (req, res) => {
+    .get(verifyToken, authorizeClient, (req, res) => {
       const query = {};
 
       Object.assign(query, req.query);
@@ -40,7 +40,7 @@ function routes(productModel) {
       });
     });
 
-  productRouter.use('/product/:productId', authenticate, (req, res, next) => {
+  productRouter.use('/product/:productId', verifyToken, authorizeClient, (req, res, next) => {
     productModel.findById(req.params.productId, (err, product) => {
       if(err) {
         return res.sendStatus(404);

@@ -3,9 +3,9 @@ const { models } = require('mongoose');
 const debug = require('debug')('app:userRouter');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const authenticate = require('../middleware/authenticate');
+const { verifyToken, authorizeClient, authorizeAdministrator } = require('../middleware/authenticate');
 
-function routes(userModel) {
+function routes(userModel, userRoleModel) {
   const userRouter = express.Router();
 
   userRouter.route('/user/register')
@@ -19,6 +19,8 @@ function routes(userModel) {
           res.status(400);
           return res.send('Invalid entry.');
         }
+
+        user.role = await userRoleModel.findOne({ userRole: 'administrator' });
 
         const existingUser = await userModel.findOne({ email: user.email });
 
@@ -78,7 +80,7 @@ function routes(userModel) {
     });
 
   userRouter.route('/user')
-    .get(authenticate, (req, res) => {
+    .get(verifyToken, authorizeClient, (req, res) => {
       const query = {};
 
       Object.assign(query, req.query);
@@ -98,7 +100,7 @@ function routes(userModel) {
       });
     });
 
-  userRouter.use('/user/:userId', authenticate, (req, res, next) => {
+  userRouter.use('/user/:userId', verifyToken, authorizeClient, (req, res, next) => {
     userModel.findById(req.params.userId, (err, user) => {
       if (err) {
         return res.sendStatus(404);
