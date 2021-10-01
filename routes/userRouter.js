@@ -1,9 +1,10 @@
 const express = require('express');
-const { models } = require('mongoose');
+const { models, Types } = require('mongoose');
 const debug = require('debug')('app:userRouter');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { verifyToken, authorizeClient, authorizeAdministrator } = require('../middleware/authenticate');
+const { request, response } = require('express');
 
 function routes(userModel, userRoleModel) {
   const userRouter = express.Router();
@@ -11,39 +12,50 @@ function routes(userModel, userRoleModel) {
   userRouter.route('/user/register')
     .post(async (req, res) => {
       try {
+        /// Create new user model based on data provided.
         let user = new userModel(req.body);
 
-        /* POST requirements here */
-
+        /// Check if input data is valid.
         if (!(user.username && user.email && user.password)) {
           res.status(400);
           return res.send('Invalid entry.');
         }
 
-        user.role = await userRoleModel.findOne({ userRole: 'administrator' });
+        /// Request user role.
+        user.role = await userRoleModel.findOne({ userRole: process.env.SIGNUP_ROLE });
 
+        /// Request user data.
         const existingUser = await userModel.findOne({ email: user.email });
 
+        /// Check if requested user exists.
         if (existingUser) {
           res.status(409);
-          res.send('User already exists.')
+          return res.send('User already exists.')
         }
 
+        /// Encrypt password.
         const encryptedPassword = await bcrypt.hash(user.password, 10);
         user.password = encryptedPassword;
 
+        /// Sign the token.
         const token = jwt.sign(
           { user_id: user._id, email: user.email },
           process.env.TOKEN_KEY,
           { expiresIn: "2h" }
         )
+
+        /// Update the token.
         user.token = token;
 
+        /// Save the user data.
         user.save();
+
+        /// Send response.
         res.status(201);
         return res.json(user);
       } catch (err) {
-        debug(err);
+        /// Return error if necessary.
+        return res.send(err);
       }
     });
 
@@ -52,24 +64,35 @@ function routes(userModel, userRoleModel) {
       try {
         let user = new userModel(req.body);
 
-        if (!(user.email && user.password)) {
+        /// Check if input data is valid.
+        if (!(user.email && user.password && user.username)) {
           res.status(400);
           return res.send('Invalid entry.');
         }
 
+        /// Get existing user's data.
         const existingUser = await userModel.findOne({ email: user.email });
 
-        if (existingUser && (await bcrypt.compare(user.password, existingUser.password))) {
+        /// Check if user exists.
+        if(!existingUser) {
+          res.status('404');
+          return res.send('User not found.');
+        }
+
+        /// Check if the passwords match.
+        if (await bcrypt.compare(user.password, existingUser.password)) {
+          /// Sign the user token.
           const token = jwt.sign(
-            { user_id: user._id, email: user.email },
+            { user_id: existingUser._id, email: existingUser.email },
             process.env.TOKEN_KEY,
             { expiresIn: "2h" }
           );
-          user.token = token;
-          user.password 
+
+          existingUser.token = token;
+          await existingUser.save();
 
           res.status(200);
-          return res.json(user);
+          return res.json(existingUser);
         }
 
         res.status(400);
@@ -80,65 +103,56 @@ function routes(userModel, userRoleModel) {
     });
 
   userRouter.route('/user')
-    .get(verifyToken, authorizeClient, (req, res) => {
-      const query = {};
+    .get([verifyToken, authorizeAdministrator], async (req, res) => {
+      try {
+        /// Create query based on input.
+        const query = {};
+        Object.assign(query, req.query);
 
-      Object.assign(query, req.query);
+        /// Query the database.
+        const queryResponse = await userModel.find(query);
 
-      userModel.find(query, (err, users) => {
-        if (err) {
-          res.send(err);
-        }
-
-        const returnUser = users.map((user) => {
-          let newUser = user.toJSON();
-          /* Extra processing */
-          return newUser;
+        /// Convert the response into a JSON file.
+        const returnResponse = queryResponse.map((response) => {
+          let newResponse = response.toJSON();
+          return newResponse;
         });
-        res.status(200);
-        return res.json(returnUser);
-      });
-    });
 
-  userRouter.use('/user/:userId', verifyToken, authorizeClient, (req, res, next) => {
-    userModel.findById(req.params.userId, (err, user) => {
-      if (err) {
-        return res.sendStatus(404);
+        /// Send response.
+        res.status(200);
+        return res.json(returnResponse);        
+      } catch (err) {
+        return res.send(err);
       }
-      if (user) {
-        req.user = user;
-        return next();
-      }
-      return res.sendStatus(400);
     });
-  });
 
   userRouter.route('/user/:userId')
-    .get((req, res) => {
-      const returnUser = req.user.toJSON();
-      res.status(200);
-      res.json(returnUser);
-    })
-    .put((req, res) => {
-      const { user } = req;
-
-      Object.assign(user, req.body);
-
-      req.user.save((err) => {
-        if (err) {
-          return res.send(err);
+    .get([verifyToken, authorizeClient], async (req, res) => {
+      try {
+        /// Check if user ID is valid.
+        if (!Types.ObjectId.isValid(req.params.userId)) {
+          res.status(400);
+          return res.send('Invalid ID.');
         }
+
+        /// Get requested user data.
+        const requestedUser = await userModel.findById(req.params.userId);
+
+        /// Check if requested user exists.
+        if (!requestedUser) {
+          res.status(404);
+          return res.send('User not found.');
+        }
+
+        /// Client should not be able to see administrator or moderator information.
+
+        /// Send requested user.
         res.status(200);
-        return res.json(user);
-      })
-    })
-    .delete((req, res) => {
-      req.user.remove((err) => {
-        if (err) {
-          return res.send(err);
-        }
-        return res.sendStatus(200);
-      })
+        return res.json(requestedUser);
+      } catch (err) {
+        /// Return error if necessary.
+        return res.send(err);
+      }
     });
 
   return userRouter;

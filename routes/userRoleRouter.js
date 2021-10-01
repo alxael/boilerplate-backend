@@ -9,7 +9,7 @@ function routes(userRoleModel) {
   const userRoleRouter = express.Router();
 
   userRoleRouter.route('/userRole')
-    .get(verifyToken, authorizeClient, (req, res) => {
+    .get([verifyToken, authorizeModerator], (req, res) => {
       const query = {};
 
       Object.assign(query, req.query);
@@ -28,7 +28,7 @@ function routes(userRoleModel) {
         return res.json(returnUserRole);
       });
     })
-    .post(verifyToken, authorizeClient, async (req, res) => {
+    .post([verifyToken, authorizeAdministrator], async (req, res) => {
       try {
         const userRole = new userRoleModel(req.body);
 
@@ -54,7 +54,7 @@ function routes(userRoleModel) {
       }
     });
 
-  userRoleRouter.use('/userRole/:userRoleId', verifyToken, authorizeClient, (req, res, next) => {
+  userRoleRouter.use('/userRole/:userRoleId', verifyToken, (req, res, next) => {
     userRoleModel.findById(req.params.userRoleId, (err, userRole) => {
       if (err) {
         return res.sendStatus(404);
@@ -68,7 +68,7 @@ function routes(userRoleModel) {
   });
 
   userRoleRouter.route('/userRole/:userRoleId')
-    .delete((req, res) => {
+    .delete(authorizeAdministrator, (req, res) => {
       req.userRole.remove((err) => {
         if (err) {
           return res.send(err);

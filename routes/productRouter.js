@@ -7,7 +7,7 @@ function routes(productModel) {
   const productRouter = express.Router();
 
   productRouter.route('/product')
-    .post(verifyToken, authorizeClient, (req, res) => {
+    .post([verifyToken, authorizeModerator], (req, res) => {
       const product = new productModel(req.body);
       
       /* POST requirements here */
@@ -21,7 +21,7 @@ function routes(productModel) {
       res.status(201);
       return res.json(product);
     })
-    .get(verifyToken, authorizeClient, (req, res) => {
+    .get([verifyToken, authorizeClient], (req, res) => {
       const query = {};
 
       Object.assign(query, req.query);
@@ -40,7 +40,7 @@ function routes(productModel) {
       });
     });
 
-  productRouter.use('/product/:productId', verifyToken, authorizeClient, (req, res, next) => {
+  productRouter.use('/product/:productId', verifyToken, (req, res, next) => {
     productModel.findById(req.params.productId, (err, product) => {
       if(err) {
         return res.sendStatus(404);
@@ -54,11 +54,11 @@ function routes(productModel) {
   });
 
   productRouter.route('/product/:productId')
-    .get((req, res) => {
+    .get(authorizeClient, (req, res) => {
       const returnProduct = req.product.toJSON();
       res.json(returnProduct);
     })
-    .put((req, res) => {
+    .put(authorizeModerator, (req, res) => {
       const { product } = req;
 
       Object.assign(product, req.body);
@@ -71,7 +71,7 @@ function routes(productModel) {
         return res.json(product);
       })
     })
-    .delete((req, res) => {
+    .delete(authorizeModerator, (req, res) => {
       req.product.remove((err) => {
         if(err) {
           return res.send(err);
