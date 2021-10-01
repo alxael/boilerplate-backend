@@ -1,0 +1,160 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Product API
+  description: ""
+tags:
+  - name: No Authorization
+    description: No authorization required.
+  - name: Client
+    description: Client authorization.
+  - name: Moderator
+    description: Moderator authorization.
+  - name: Administrator
+    description: Administrator authorization.
+  - name: Product
+  - name: Product by ID
+  - name: User
+  - name: User by ID
+  - name: User Role
+paths:
+  "/user":
+    get:
+      tags:
+        - User
+        - Administrator
+      description: Query the database.
+      parameters:
+        - in: query
+          name: _id
+          schema:
+            type: string
+        - in: query
+          name: username
+          schema:
+            type: string
+        - in: query
+          name: email
+          schema:
+            type: string
+        - in: query
+          name: token
+          schema:
+            type: string
+        - in: query
+          name: role
+          schema:
+            type: string
+      security:
+        - JWT: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+  "/user/login":
+    post:
+      tags:
+        - User
+        - No Authorization
+      description: Log in.
+      requestBody:
+        $ref: "#/components/requestBodies/User"
+      responses:
+        "200":
+          description: Log in successful.
+        "400":
+          description: Invalid input data or bad credentials.
+  "/user/register":
+    post:
+      tags:
+        - User
+        - No Authorization
+      description: Register new user.
+      requestBody:
+        $ref: "#/components/requestBodies/User"
+      responses:
+        "201":
+          description: User created successfully.
+        "400":
+          description: Invalid entry.
+        "409":
+          description: Conflicting entry.
+  "/user/{userId}":
+    get:
+      tags:
+        - User by ID
+        - Client
+      description: Returns the user information based on ID.
+      security:
+        - JWT: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Authorization401"
+        "403":
+          $ref: "#/components/responses/Authorization403"
+servers:
+  - url: http://localhost:4000/api
+components:
+  responses:
+    Authorization401:
+      description: "Authorization: The token is invalid."
+    Authorization403:
+      description: "Authorization: No token provided."
+  requestBodies:
+    User:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/User"
+      required: "true"
+  
+      securitySchemes:
+    JWT:
+      type: apiKey
+      name: Authorization
+      in: header
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    UserRole:
+      type: object
+      properties:
+        userRole:
+          type: string
+    Product:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer

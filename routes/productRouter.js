@@ -1,18 +1,46 @@
 const express = require('express');
 const { models } = require('mongoose');
-const path = require('path');
 const debug = require('debug')('app:productRouter');
-const productController = require(path.join(__dirname, '../controllers/productController'));
+const { verifyToken, authorizeClient, authorizeModerator } = require('../middleware/authenticate');
 
 function routes(productModel) {
   const productRouter = express.Router();
-  const controller = productController(productModel)
 
-  productRouter.route('/products')
-    .post(controller.post)
-    .get(controller.get);
+  productRouter.route('/product')
+    .post([verifyToken, authorizeModerator], (req, res) => {
+      const product = new productModel(req.body);
+      
+      /* POST requirements here */
 
-  productRouter.use('/products/:productId', (req, res, next) => {
+      if(!(product.name && product.price)) {
+        res.status(400);
+        return res.send('Invalid entry.');
+      }
+  
+      product.save();
+      res.status(201);
+      return res.json(product);
+    })
+    .get([verifyToken, authorizeClient], (req, res) => {
+      const query = {};
+
+      Object.assign(query, req.query);
+  
+      productModel.find(query, (err, products) => {
+        if(err) {
+          res.send(err);
+        }
+  
+        const returnProduct = products.map((product) => {
+          let newProduct = product.toJSON();
+          /* Extra processing */
+          return newProduct;
+        });
+        return res.json(returnProduct);
+      });
+    });
+
+  productRouter.use('/product/:productId', verifyToken, (req, res, next) => {
     productModel.findById(req.params.productId, (err, product) => {
       if(err) {
         return res.sendStatus(404);
@@ -22,15 +50,15 @@ function routes(productModel) {
         return next();
       }
       return res.sendStatus(400);
-    })
+    });
   });
 
-  productRouter.route('/products/:productId')
-    .get((req, res) => {
+  productRouter.route('/product/:productId')
+    .get(authorizeClient, (req, res) => {
       const returnProduct = req.product.toJSON();
       res.json(returnProduct);
     })
-    .put((req, res) => {
+    .put(authorizeModerator, (req, res) => {
       const { product } = req;
 
       Object.assign(product, req.body);
@@ -39,34 +67,16 @@ function routes(productModel) {
         if(err) {
           return res.send(err);
         }
+        res.status(200);
         return res.json(product);
       })
     })
-    .patch((req, res) => {
-      const { product } = req;
-
-      if(req.body._id) {
-        delete req.body._id;
-      }
-      Object.entries(req.body).forEach((item) => {
-        const key = item[0];
-        const value = item[1];
-        product[key] = value;
-      });
-
-      req.product.save((err) => {
-        if(err) {
-          return res.send(err);
-        }
-        return res.json(product);
-      });
-    })
-    .delete((req, res) => {
+    .delete(authorizeModerator, (req, res) => {
       req.product.remove((err) => {
         if(err) {
           return res.send(err);
         }
-        return res.sendStatus(204);
+        return res.sendStatus(200);
       })
     });
 
