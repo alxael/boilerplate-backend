@@ -1,4 +1,4 @@
-# Boilerplate Back-End
+# Product API
 
 This project is a RESTful API designed for the management of an online shop.
 
